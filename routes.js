@@ -6,13 +6,13 @@ var logger = require('./logger').logger;
 
 module.exports = function (app) {
 
-    app.get('/', function (req, res) {
+    app.get('/',  function (req, res) {
         logger.info('api is up and running....');
         res.send('api is up and running....');
     });
 
     //user routes - anonymous access
-    app.post("/user/generateToken", function (req, res) {
+    app.post("/user/generateToken",  function (req, res) {
         logger.info('in api generate token');
         usercontroller.generateToken(req, res);
     });
@@ -27,15 +27,16 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
-    app.post('/diabetic/get/:id', middleware.validateJwt, function (req, res) {
+    app.post('/diabetic/get',  middleware.validateJwt, function (req, res) {
+        logger.debug('101 inside api get ');
         try {
-            diabeticController.list(req, res);
+            diabeticController.get(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist list route ' + error);
+            logger.error('105 in error of get route ' + error);
             common.sendError(res, error);
         }
     });
-    app.post('/diabetic/insert', middleware.validateJwt, function (req, res) {
+    app.post('/diabetic/insert',  middleware.validateJwt, function (req, res) {
         logger.debug('in diabetic insert route '+JSON.stringify( req.body));
         try {
             diabeticController.insert(req, res);
@@ -44,7 +45,7 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
-    app.post('/diabetic/delete', middleware.validateJwt, function (req, res) {
+    app.post('/diabetic/delete',  middleware.validateJwt, function (req, res) {
         try {
             diabeticController.delete(req, res);
         } catch (ex) {

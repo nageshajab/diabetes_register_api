@@ -33,7 +33,9 @@ exports.list = async function list(req, res) {
     });
 }
 
-exports.get = async function list(req, res) {
+exports.get = async function get(req, res) {
+    const id = req.body.id;
+    console.log('getting id ' + id);
     await MongoClient.connect(uri, function (err, db) {
         try {
             if (err) {
@@ -41,18 +43,20 @@ exports.get = async function list(req, res) {
                 throw err
             };
             var dbo = db.db(process.env.DB_NAME);
-            logger.info(` ${process.env.DB_NAME} initialized`);
-            dbo.collection(process.env.COLLECTION_NAME).find({}).toArray(function (err, result) {
-                logger.info('received record list count ' + result.length);
+
+            dbo.collection(process.env.COLLECTION_NAME).findOne({
+                "_id": new ObjectId(id)
+            }, (function (err, result) {
                 if (err) {
-                    logger.error('in error ' + err);
+                    logger.error('103 error while fetching record  ' + err);
                     throw err
                 };
+                logger.info('102 found record with id ' + id);
                 common.sendSuccess(res, result);
                 db.close();
-            });
+            }));
         } catch (error) {
-            logger.error(e.message);
+            logger.error('104 ' + e.message);
             common.sendError(res, e.message);
         }
     });

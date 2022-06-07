@@ -4,7 +4,7 @@ const logger=require('../logger').logger;
 const jwt = require('jsonwebtoken');
 
 exports.generateToken = function (req, res) {
-    logger.info('generating token');
+    logger.info('100 generating token '+JSON.stringify(req.body));
     if (req.body.username !== 'nageshajab' || req.body.password !== 'password1@') {
         logger.info('hard coded username pwd, pls check');
         return res.status(401).json({})
