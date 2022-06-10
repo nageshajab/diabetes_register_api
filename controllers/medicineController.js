@@ -16,7 +16,7 @@ exports.list = async function list(req, res) {
             };
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
-            dbo.collection(process.env.VISIT_COLLECTION_NAME).find({}).toArray(function (err, result) {
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).find({}).toArray(function (err, result) {
                 logger.info('received record list count ' + result.length);
                 if (err) {
                     logger.error('in error ' + err);
@@ -43,7 +43,7 @@ exports.get = async function get(req, res) {
             };
             var dbo = db.db(process.env.DB_NAME);
 
-            dbo.collection(process.env.VISIT_COLLECTION_NAME).findOne({
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).findOne({
                 "_id": new ObjectId(id)
             }, (function (err, result) {
                 if (err) {
@@ -70,7 +70,7 @@ exports.insert = async function insert(req, res) {
             }
             var dbo = db.db(process.env.DB_NAME);
 
-            dbo.collection(process.env.VISIT_COLLECTION_NAME).insertOne(req.body, function (err, result) {
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).insertOne(req.body, function (err, result) {
                 if (err) throw err;
                 common.sendSuccess(res, result);
                 db.close();
@@ -93,14 +93,14 @@ exports.delete = async function delete1(req, res) {
             var myquery = {
                 '_id': o_id
             };
-            dbo.collection(process.env.VISIT_COLLECTION_NAME).find(myquery).toArray(function (err, result) {
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).find(myquery).toArray(function (err, result) {
                 if (err) {
                     logger.error(err);
                     throw err;
                 }
                 logger.info('found record ' + JSON.stringify(result));
             });
-            dbo.collection(process.env.VISIT_COLLECTION_NAME).deleteOne(myquery, function (err, result) {
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).deleteOne(myquery, function (err, result) {
                 if (err) {
                     logger.error(err);
                     return err;

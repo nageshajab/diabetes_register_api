@@ -4,12 +4,11 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const bodyParser = require('body-parser')
-const middleware = require('./middleware');
 var cors = require('cors');
-var logger =require('./logger').logger;
+var logger = require('./logger');
 
-  // initialize express app
-  const app = module.exports = express();
+// initialize express app
+const app = module.exports = express();
 app.use(cors());
 
 // define middlewares
@@ -23,12 +22,19 @@ app.use(bodyParser.json());
 // read environment variables
 dotenv.config();
 
-require('./routes')(app);
-
+var diabeticRoute = require('./routes/diabeticRoutes');
+diabeticRoute(app);
+var medicineRoutes = require('./routes/medicineRoutes');
+medicineRoutes(app);
+require('./routes/other')(app);
+require('./routes/userRoutes')(app);
 
 //start listening on port
 let PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
+  logger.clearLogFiles();
   logger.info(`Server is up and running on ${PORT}`);
   console.log(`Server is up and running on ${PORT}`);
+  //setInterval(findRemoveSync.bind(this,__dirname + '/logs', {age: {seconds: 3600}}), 360000);
+
 });

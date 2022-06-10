@@ -1,6 +1,6 @@
 'use strict'
 
-const logger=require('../logger').logger;
+const logger=require('../logger');
 const jwt = require('jsonwebtoken');
 
 exports.generateToken = function (req, res) {
