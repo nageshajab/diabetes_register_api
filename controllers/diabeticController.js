@@ -55,8 +55,8 @@ exports.get = async function get(req, res) {
                 db.close();
             }));
         } catch (error) {
-            logger.error('104 ' + e.message);
-            common.sendError(res, e.message);
+            logger.error('104 ' + error.message);
+            common.sendError(res, error.message);
         }
     });
 }

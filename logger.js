@@ -39,7 +39,9 @@ function writetoFile(fname, content) {
 
 exports.clearLogFiles = function () {
     var uploadsDir = __dirname + '/logs';
-
+    if (typeof files == 'undefined')
+        return;
+        
     fs.readdir(uploadsDir, function (err, files) {
         files.forEach(function (file, index) {
             fs.stat(path.join(uploadsDir, file), function (err, stat) {
