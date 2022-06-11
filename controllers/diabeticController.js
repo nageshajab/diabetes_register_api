@@ -26,8 +26,8 @@ exports.list = async function list(req, res) {
                 db.close();
             });
         } catch (error) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            logger.error(error.message);
+            common.sendError(res, error.message);
         }
     });
 }
