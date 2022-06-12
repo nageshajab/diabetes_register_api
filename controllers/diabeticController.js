@@ -34,7 +34,7 @@ exports.list = async function list(req, res) {
 
 exports.get = async function get(req, res) {
     const id = req.body.id;
-    console.log('getting id ' + id);
+    logger.debug('getting id ' + id);
     await MongoClient.connect(uri, function (err, db) {
         try {
             if (err) {

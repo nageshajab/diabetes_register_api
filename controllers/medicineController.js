@@ -26,15 +26,15 @@ exports.list = async function list(req, res) {
                 db.close();
             });
         } catch (error) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            logger.error(error.message);
+            common.sendError(res, error.message);
         }
     });
 }
 
 exports.get = async function get(req, res) {
     const id = req.body.id;
-    console.log('getting id ' + id);
+    logger.debug('getting id ' + id);
     await MongoClient.connect(uri, function (err, db) {
         try {
             if (err) {

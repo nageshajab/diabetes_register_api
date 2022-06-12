@@ -30,11 +30,10 @@ require('./routes/other')(app);
 require('./routes/userRoutes')(app);
 
 //start listening on port
+var dt=new Date();
 let PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   logger.clearLogFiles();
-  logger.info(`Server is up and running on ${PORT}`);
-  console.log(`Server is up and running on ${PORT}`);
-  //setInterval(findRemoveSync.bind(this,__dirname + '/logs', {age: {seconds: 3600}}), 360000);
-
+  logger.info(`Server is up and running on ${PORT}, ${dt.getHours()}:${dt.getMinutes()}`);
+  console.log(`Server is up and running on ${PORT}, ${dt.getHours()}:${dt.getMinutes()}`);
 });
