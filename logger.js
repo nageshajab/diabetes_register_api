@@ -28,6 +28,10 @@ exports.info = function info(msg) {
 }
 
 function writetoFile(fname, content) {
+    if (process.env.ENVIRONMENT == 'prod') {
+        console.log(content);
+        return;
+    }
     fs.appendFile(fname, content, err => {
         if (err) {
             console.error(err);
