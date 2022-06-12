@@ -7,6 +7,7 @@ module.exports=function(app){
       //define routes for watchList
       app.post('/medicine/list', middleware.validateJwt, function (req, res) {
         try {
+            logger.debug('in medicine list post api route');
             medicineController.list(req, res);
         } catch (error) {
             logger.error('in error block of medicine list route ' + error);

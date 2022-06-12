@@ -8,19 +8,26 @@ var logger = require('../logger');
 const uri = process.env.DB_URI;
 
 exports.list = async function list(req, res) {
+    var query = {};
+    if (typeof req.body.name != 'undefined')
+        var query = {
+            name: new RegExp(req.body.name.trim(), 'i')
+        }
+    logger.debug('medicine controller query ' + JSON.stringify(query));
+
     await MongoClient.connect(uri, function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err
+                common.sendError(res, err.message);
             };
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
-            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).find({}).toArray(function (err, result) {
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).find(query).toArray(function (err, result) {
                 logger.info('received record list count ' + result.length);
                 if (err) {
                     logger.error('in error ' + err);
-                    throw err
+                    common.sendError(res, err.message);
                 };
                 common.sendSuccess(res, result);
                 db.close();
