@@ -76,8 +76,8 @@ exports.insert = async function insert(req, res) {
                 db.close();
             });
         } catch (error) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            logger.error(error.message);
+            common.sendError(res, error.message);
         }
     });
 }
@@ -112,6 +112,43 @@ exports.delete = async function delete1(req, res) {
         } catch (e) {
             logger.error(e.message);
             common.sendError(res, e.message);
+        }
+    });
+}
+
+exports.update = async function update(req, res) {
+    await MongoClient.connect(uri, function (err, db) {
+        try {
+            if (err) {
+                logger.error(err);
+                throw err;
+            }
+            var dbo = db.db(process.env.DB_NAME);
+
+            var myquery = {
+                '_id': ObjectId(req.body._id)
+            };
+            var newvalues = {
+                $set: {
+                    date: req.body.date,
+                    bloodpressurepre: req.body.bloodpressurepre,
+                    bloodpressurepost: req.body.bloodpressurepost,
+                    weight: req.body.weight,
+                    bslf: req.body.bslf,
+                    bslpp: req.body.bslpp,
+                    diagnosis: req.body.diagnosis,
+                    medicines: req.body.medicines
+                }
+            };
+            dbo.collection(process.env.VISIT_COLLECTION_NAME).updateOne(myquery, newvalues, function (err, result) {
+                if (err) throw err;
+                logger.debug(JSON.stringify(result));
+                common.sendSuccess(res, result);
+                db.close();
+            });
+        } catch (error) {
+            logger.error(error.message);
+            common.sendError(res, error.message);
         }
     });
 }

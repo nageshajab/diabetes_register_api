@@ -1,4 +1,6 @@
 const MongoClient = require('mongodb').MongoClient;
+const ObjectID = require('mongodb').ObjectId;
+
 const {
     ObjectId
 } = require('mongodb');
@@ -32,6 +34,49 @@ exports.list = async function list(req, res) {
                 common.sendSuccess(res, result);
                 db.close();
             });
+        } catch (error) {
+            logger.error(error);
+            common.sendError(res, error.message);
+        }
+    });
+}
+
+exports.listByIds = async function listByIds(req, res) {
+    var query = {};
+    logger.debug('medicine controller query ' + JSON.stringify(req.body.data));
+    const idArray = req.body.data;
+
+    const objectIdArray = [];
+    for (let i = 0; i < idArray.length; i++) {
+        console.log(idArray[i]);
+        console.log(ObjectId.isValid(idArray[i]));
+        if (ObjectId.isValid(idArray[i])) {
+            objectIdArray[i] = ObjectId(idArray[i]);
+        }
+    }
+
+    await MongoClient.connect(uri, function (err, db) {
+        try {
+            if (err) {
+                logger.error(err);
+                common.sendError(res, err.message);
+            };
+            var dbo = db.db(process.env.DB_NAME);
+            logger.info(` ${process.env.DB_NAME} initialized`);
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).find({
+                '_id': {
+                    $in: objectIdArray
+                }
+            }).toArray(function (err, result) {
+                logger.info('received record list count ' + result.length);
+                if (err) {
+                    logger.error('in error ' + err);
+                    common.sendError(res, err.message);
+                };
+                common.sendSuccess(res, result);
+                db.close();
+            });;
+
         } catch (error) {
             logger.error(error.message);
             common.sendError(res, error.message);
