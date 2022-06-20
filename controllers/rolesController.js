@@ -184,7 +184,14 @@ exports.update = async function update(req, res) {
                 $set: {
                     name: req.body.name,
                     description: req.body.description,
-                    resourceAccess: req.body.resourceAccess
+                    chkMedicineCreate: req.body.chkmedicineUpdate,
+                    chkMedicineRead: req.body.chkMedicineRead,
+                    chkmedicineUpdate: req.body.chkmedicineUpdate,
+                    chkMedicineDelete: req.body.chkMedicineDelete,
+                    chkVisitCreate: req.body.chkVisitCreate,
+                    chkVisitRead: req.body.chkVisitRead,
+                    chkVisitUpdate: req.body.chkVisitUpdate,
+                    chkVisitDelete: req.body.chkVisitDelete,
                 }
             };
 

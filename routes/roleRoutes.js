@@ -4,7 +4,7 @@ var middleware=require('../middleware');
 
 module.exports = function (app) {
  
-    app.post('/role/list', middleware.validateJwt, function (req, res) {
+    app.post('/roles/list', middleware.validateJwt, function (req, res) {
         try {
             logger.debug('in role list post api route');
             roleController.list(req, res);
@@ -14,7 +14,7 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/role/listByids', middleware.validateJwt, function (req, res) {
+    app.post('/roles/listByids', middleware.validateJwt, function (req, res) {
         try {
             logger.debug('in role list post api route');
             roleController.listByIds(req, res);
@@ -24,7 +24,7 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/role/get', middleware.validateJwt, function (req, res) {
+    app.post('/roles/get', middleware.validateJwt, function (req, res) {
         logger.debug('101 inside api role get ');
         try {
             roleController.get(req, res);
@@ -34,7 +34,7 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/role/insert', middleware.validateJwt, function (req, res) {
+    app.post('/roles/insert', middleware.validateJwt, function (req, res) {
         logger.debug('in role insert route ' + JSON.stringify(req.body));
         try {
             roleController.insert(req, res);
@@ -44,7 +44,7 @@ module.exports = function (app) {
         }
     });
 
-    app.post('/role/delete', middleware.validateJwt, function (req, res) {
+    app.post('/roles/delete', middleware.validateJwt, function (req, res) {
         try {
             roleController.delete(req, res);
         } catch (ex) {
@@ -53,7 +53,7 @@ module.exports = function (app) {
         }
     });
     
-    app.post('/role/update', middleware.validateJwt, function (req, res) {
+    app.post('/roles/update', middleware.validateJwt, function (req, res) {
         logger.debug('in role update route ' + JSON.stringify(req.body));
         try {
             roleController.update(req, res);

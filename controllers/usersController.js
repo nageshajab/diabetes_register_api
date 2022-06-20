@@ -2,7 +2,7 @@
 
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectId;
-const logger=require('../logger');
+const logger = require('../logger');
 const jwt = require('jsonwebtoken');
 
 const {
@@ -14,7 +14,7 @@ const common = require('./common');
 const uri = process.env.DB_URI;
 
 exports.generateToken = function (req, res) {
-    logger.info('100 generating token '+JSON.stringify(req.body));
+    logger.info('100 generating token ' + JSON.stringify(req.body));
     if (req.body.username !== 'nageshajab' || req.body.password !== 'password1@') {
         logger.info('hard coded username pwd, pls check');
         return res.status(401).json({})
@@ -46,8 +46,8 @@ exports.validateToken = function (req, res) {
             return true;
         } else {
             // Access Denied
-             res.status(401).send('Invalid security token');
-             res.end();
+            res.status(401).send('Invalid security token');
+            res.end();
         }
     } catch (error) {
         // Access Denied
@@ -230,8 +230,9 @@ exports.update = async function update(req, res) {
             var newvalues = {
                 $set: {
                     name: req.body.name,
-                    content: req.body.content,
-                    roles: req.body.roles
+                    description: req.body.description,
+                    chkAdmin: req.body.chkAdmin,
+                    chkBasic: req.body.chkBasic
                 }
             };
 
