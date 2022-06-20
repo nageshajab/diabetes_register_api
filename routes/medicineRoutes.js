@@ -14,6 +14,7 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
+
     app.post('/medicine/listByids', middleware.validateJwt, function (req, res) {
         try {
             logger.debug('in medicine list post api route');
@@ -23,6 +24,7 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
+
     app.post('/medicine/get', middleware.validateJwt, function (req, res) {
         logger.debug('101 inside api medicine get ');
         try {
@@ -32,6 +34,7 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
+
     app.post('/medicine/insert', middleware.validateJwt, function (req, res) {
         logger.debug('in medicine insert route ' + JSON.stringify(req.body));
         try {
@@ -41,12 +44,23 @@ module.exports = function (app) {
             common.sendError(res, error);
         }
     });
+
     app.post('/medicine/delete', middleware.validateJwt, function (req, res) {
         try {
             medicineController.delete(req, res);
         } catch (ex) {
             logger.error('in error block of medicine delete route ' + ex);
             common.sendError(res, ex);
+        }
+    });
+    
+    app.post('/medicine/update', middleware.validateJwt, function (req, res) {
+        logger.debug('in medicine update route ' + JSON.stringify(req.body));
+        try {
+            medicineController.update(req, res);
+        } catch (error) {
+            logger.error('in error block of medicine insert route ' + error);
+            common.sendError(res, error);
         }
     });
 }

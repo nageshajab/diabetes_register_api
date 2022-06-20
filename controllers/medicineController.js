@@ -107,8 +107,8 @@ exports.get = async function get(req, res) {
                 db.close();
             }));
         } catch (error) {
-            logger.error('104 ' + e.message);
-            common.sendError(res, e.message);
+            logger.error('104 ' + error.message);
+            common.sendError(res, error.message);
         }
     });
 }
@@ -162,6 +162,38 @@ exports.delete = async function delete1(req, res) {
                 common.sendSuccess(res, `deleted ${result.deletedCount} acknowledged ${result.acknowledged}`);
             });
         } catch (e) {
+            logger.error(e.message);
+            common.sendError(res, e.message);
+        }
+    });
+}
+
+exports.update = async function update(req, res) {
+    await MongoClient.connect(uri, function (err, db) {
+        try {
+            if (err) {
+                logger.error(err);
+                throw err;
+            }
+            var dbo = db.db(process.env.DB_NAME);
+
+            var myquery = {
+                '_id': ObjectId(req.body._id)
+            };
+            var newvalues = {
+                $set: {
+                    name: req.body.name,
+                    content: req.body.content
+                }
+            };
+
+            dbo.collection(process.env.MEDICINE_COLLECTION_NAME).updateOne(myquery, newvalues, function (err, result) {
+                if (err) throw err;
+                logger.debug(JSON.stringify(result));
+                common.sendSuccess(res, result);
+                db.close();
+            });
+        } catch (error) {
             logger.error(e.message);
             common.sendError(res, e.message);
         }
