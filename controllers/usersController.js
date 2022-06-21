@@ -24,9 +24,12 @@ exports.generateToken = function (req, res) {
     let data = {
         time: Date(),
         userId: 12,
+        roles: 'admin'
     }
 
-    const token = jwt.sign(data, jwtSecretKey);
+    const token = jwt.sign(data, jwtSecretKey, {
+        expiresIn: "2h"
+    });
     logger.info('token is ' + token);
     res.send(token);
 }
@@ -42,6 +45,7 @@ exports.validateToken = function (req, res) {
         const token = req.header(tokenHeaderKey);
 
         const verified = jwt.verify(token, jwtSecretKey);
+
         if (verified) {
             return true;
         } else {
