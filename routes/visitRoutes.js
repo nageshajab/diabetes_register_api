@@ -1,11 +1,11 @@
 var logger = require('../logger');
 var middleware=require('../middleware');
 var common=require('../controllers/common');
-var diabeticController=require('../controllers/diabeticController');
+var diabeticController=require('../controllers/visitController');
 
 module.exports=function(app){
       //define routes for watchList
-      app.post('/diabetic/list', middleware.validateJwt, function (req, res) {
+      app.post('/visit/list', middleware.validateJwt, function (req, res) {
         try {
             diabeticController.list(req, res);
         } catch (error) {
@@ -14,7 +14,7 @@ module.exports=function(app){
         }
     });
 
-    app.post('/diabetic/get',  middleware.validateJwt, function (req, res) {
+    app.post('/visit/get',  middleware.validateJwt, function (req, res) {
         logger.debug('101 inside api get ');
         try {
             diabeticController.get(req, res);
@@ -24,8 +24,8 @@ module.exports=function(app){
         }
     });
 
-    app.post('/diabetic/insert',  middleware.validateJwt, function (req, res) {
-        logger.debug('in diabetic insert route '+JSON.stringify( req.body));
+    app.post('/visit/insert',  middleware.validateJwt, function (req, res) {
+        logger.debug('in visit insert route '+JSON.stringify( req.body));
         try {
             diabeticController.insert(req, res);
         } catch (error) {
@@ -34,7 +34,7 @@ module.exports=function(app){
         }
     });
 
-    app.post('/diabetic/delete',  middleware.validateJwt, function (req, res) {
+    app.post('/visit/delete',  middleware.validateJwt, function (req, res) {
         try {
             diabeticController.delete(req, res);
         } catch (ex) {
@@ -43,12 +43,12 @@ module.exports=function(app){
         }
     });
 
-    app.post('/diabetic/update',  middleware.validateJwt, function (req, res) {
-        logger.debug('in diabetic update route '+JSON.stringify( req.body));
+    app.post('/visit/update',  middleware.validateJwt, function (req, res) {
+        logger.debug('in visit update route '+JSON.stringify( req.body));
         try {
             diabeticController.update(req, res);
         } catch (error) {
-            logger.error('in error block of diabetic update route ' + error);
+            logger.error('in error block of visit update route ' + error);
             common.sendError(res, error);
         }
     });

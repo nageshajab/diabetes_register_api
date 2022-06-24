@@ -22,13 +22,12 @@ app.use(bodyParser.json());
 // read environment variables
 dotenv.config();
 
-var diabeticRoute = require('./routes/diabeticRoutes');
-diabeticRoute(app);
-var medicineRoutes = require('./routes/medicineRoutes');
-medicineRoutes(app);
+require('./routes/medicineRoutes')(app);
+require('./routes/visitRoutes')(app);
 require('./routes/other')(app);
 require('./routes/userRoutes')(app);
 require('./routes/roleRoutes')(app);
+require('./routes/reportRoutes')(app);
 
 //start listening on port
 var dt=new Date();
