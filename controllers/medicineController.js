@@ -1,15 +1,15 @@
 const MongoClient = require('mongodb').MongoClient;
 const ObjectID = require('mongodb').ObjectId;
-
+const common = require('./common');
 const {
     ObjectId
 } = require('mongodb');
-const common = require('./common');
 var logger = require('../logger');
 
 const uri = process.env.DB_URI;
 
 exports.list = async function list(req, res) {
+    var mongoclient = common.getClient();
     var query = {};
     if (typeof req.body.name != 'undefined')
         var query = {
@@ -17,7 +17,7 @@ exports.list = async function list(req, res) {
         }
     logger.debug('medicine controller query ' + JSON.stringify(query));
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
@@ -42,6 +42,7 @@ exports.list = async function list(req, res) {
 }
 
 exports.listByIds = async function listByIds(req, res) {
+    var mongoclient = common.getClient();
     var query = {};
     logger.debug('medicine controller query ' + JSON.stringify(req.body.data));
     const idArray = req.body.data;
@@ -55,7 +56,7 @@ exports.listByIds = async function listByIds(req, res) {
         }
     }
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
@@ -85,13 +86,14 @@ exports.listByIds = async function listByIds(req, res) {
 }
 
 exports.get = async function get(req, res) {
+    var mongoclient = common.getClient();
     const id = req.body.id;
     logger.debug('getting id ' + id);
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err
+                common.sendError(res, err);
             };
             var dbo = db.db(process.env.DB_NAME);
 
@@ -114,11 +116,12 @@ exports.get = async function get(req, res) {
 }
 
 exports.insert = async function insert(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient = common.getClient();
+    await mongoclient.connect( function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 
@@ -137,9 +140,13 @@ exports.insert = async function insert(req, res) {
 exports.delete = async function delete1(req, res) {
     logger.info('in delete api ' + JSON.stringify(req.body.id));
 
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient=common.getClient();
+    await mongoclient.connect(function (err, db) {
         try {
-            if (err) return err;
+            if (err) {
+                logger.error(err);
+                common.sendError(res, err);
+            }
             var dbo = db.db(process.env.DB_NAME);
             var o_id = ObjectId(req.body.id);
             var myquery = {
@@ -169,11 +176,12 @@ exports.delete = async function delete1(req, res) {
 }
 
 exports.update = async function update(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient=common.getClient();
+    await mongoclient.connect( function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 

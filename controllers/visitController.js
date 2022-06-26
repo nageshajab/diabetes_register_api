@@ -8,38 +8,60 @@ var logger = require('../logger');
 const uri = process.env.DB_URI;
 
 exports.list = async function list(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    logger.debug('in visit controller list method');
+    var mongoclient = common.getClient();
+  
+    await mongoclient.connect(function (err, db) {
+        logger.debug('db connected');
         try {
             if (err) {
                 logger.error(err);
-                throw err
+                return res.status(500).json({
+                    err
+                });                             
+                common.sendError(res, err);                
             };
+      
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
+            //put ".sort({date: -1})" after find to sort
             dbo.collection(process.env.VISIT_COLLECTION_NAME).find({}).toArray(function (err, result) {
-                logger.info('received record list count ' + result.length);
+
                 if (err) {
                     logger.error('in error ' + err);
-                    throw err
+                    return res.status(500).json({
+                        err
+                    });                  
+                    common.sendError(res, err);
+                    throw err;
                 };
-                common.sendSuccess(res, result);
+                logger.info('received record list count ' + result.length);
                 db.close();
+                return res.status(200).json({
+                    result
+                });
+                //  common.sendSuccess(res, result);              
             });
         } catch (error) {
             logger.error(error.message);
+            return res.status(500).json({
+                err
+            });           
             common.sendError(res, error.message);
+            throw err;
         }
     });
 }
 
 exports.get = async function get(req, res) {
+    var mongoclient=common.getClient();
     const id = req.body.id;
     logger.debug('getting id ' + id);
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err
+                common.sendError(res, err);
             };
             var dbo = db.db(process.env.DB_NAME);
 
@@ -48,7 +70,7 @@ exports.get = async function get(req, res) {
             }, (function (err, result) {
                 if (err) {
                     logger.error('103 error while fetching record  ' + err);
-                    throw err
+                    common.sendError(res, err);
                 };
                 logger.info('102 found record with id ' + id);
                 common.sendSuccess(res, result);
@@ -62,16 +84,20 @@ exports.get = async function get(req, res) {
 }
 
 exports.insert = async function insert(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient=common.getClient();
+    await mongoclient.connect( function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 
             dbo.collection(process.env.VISIT_COLLECTION_NAME).insertOne(req.body, function (err, result) {
-                if (err) throw err;
+                if (err) {
+                    logger.error(err);
+                    common.sendError(res, err);
+                }
                 common.sendSuccess(res, result);
                 db.close();
             });
@@ -83,11 +109,15 @@ exports.insert = async function insert(req, res) {
 }
 
 exports.delete = async function delete1(req, res) {
+    var mongoclient=common.getClient();
     logger.info('in delete api ' + JSON.stringify(req.body.id));
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
-            if (err) return err;
+            if (err) {
+                logger.error(err);
+                common.sendError(res, err);
+            }
             var dbo = db.db(process.env.DB_NAME);
             var o_id = ObjectId(req.body.id);
             var myquery = {
@@ -96,14 +126,14 @@ exports.delete = async function delete1(req, res) {
             dbo.collection(process.env.VISIT_COLLECTION_NAME).find(myquery).toArray(function (err, result) {
                 if (err) {
                     logger.error(err);
-                    throw err;
+                    common.sendError(res, err);
                 }
                 logger.info('found record ' + JSON.stringify(result));
             });
             dbo.collection(process.env.VISIT_COLLECTION_NAME).deleteOne(myquery, function (err, result) {
                 if (err) {
                     logger.error(err);
-                    return err;
+                    common.sendError(res, err);
                 }
                 db.close();
                 logger.info(result);
@@ -117,11 +147,12 @@ exports.delete = async function delete1(req, res) {
 }
 
 exports.update = async function update(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient=common.getClient();
+    await mongoclient.connect( function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 
@@ -141,7 +172,10 @@ exports.update = async function update(req, res) {
                 }
             };
             dbo.collection(process.env.VISIT_COLLECTION_NAME).updateOne(myquery, newvalues, function (err, result) {
-                if (err) throw err;
+                if (err) {
+                    logger.error(err);
+                    common.sendError(res, err);
+                }
                 logger.debug(JSON.stringify(result));
                 common.sendSuccess(res, result);
                 db.close();

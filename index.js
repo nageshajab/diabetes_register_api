@@ -37,3 +37,8 @@ app.listen(PORT, () => {
   logger.info(`Server is up and running on ${PORT}, ${dt.getHours()}:${dt.getMinutes()}`);
   console.log(`Server is up and running on ${PORT}, ${dt.getHours()}:${dt.getMinutes()}`);
 });
+
+process.on('uncaughtException', (err) => {
+  console.log('whoops! there was an error');
+  console.log(err);
+});

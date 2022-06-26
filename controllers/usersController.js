@@ -9,29 +9,76 @@ const {
     ObjectId
 } = require('mongodb');
 const common = require('./common');
-
-
 const uri = process.env.DB_URI;
 
 exports.generateToken = function (req, res) {
     logger.info('100 generating token ' + JSON.stringify(req.body));
-    if (req.body.username !== 'nageshajab' || req.body.password !== 'password1@') {
-        logger.info('hard coded username pwd, pls check');
-        return res.status(401).json({})
-    }
 
-    let jwtSecretKey = process.env.JWT_SECRET_KEY;
-    let data = {
-        time: Date(),
-        userId: 12,
-        roles: 'admin'
-    }
+    try {
+        const someasyncFunction = async function someasyncFunction() {
+            await getUser(req.body.username, req.body.password, (user) => {
+                console.log(typeof user);
+                console.log(JSON.stringify(user));
 
-    const token = jwt.sign(data, jwtSecretKey, {
-        expiresIn: "2h"
+                if (user != null && user.length > 0) {
+                    let jwtSecretKey = process.env.JWT_SECRET_KEY;
+                    let data = {
+                        time: Date(),
+                        userId: 12,
+                        roles: user.roles,
+                        name: user.name
+                    }
+
+                    const token = jwt.sign(data, jwtSecretKey, {
+                        expiresIn: "2h"
+                    });
+                    logger.info('token is ' + token);
+                    res.send(token);
+                } else {
+                    return res.status(401).json({
+                        'msg': 'Invalid Username or password'
+                    })
+                }
+            });
+        };
+        someasyncFunction();
+    } catch (err) {
+        logger.error(err);
+        return res.status(401).json({
+            'msg': 'Invalid Username or password'
+        });
+    }
+}
+
+async function getUser(username, password, callback) {
+    var mongoclient = common.getClient();
+    await mongoclient.connect(function (err, db) {
+        try {
+            if (err) {
+                throw err;
+            };
+            var query = {
+                name: username,
+                password: password
+            }
+            var dbo = db.db(process.env.DB_NAME);
+            logger.info(` ${process.env.DB_NAME} initialized`);
+
+
+            dbo.collection(process.env.USER_COLLECTION_NAME).find(query).toArray(function (err, result) {
+                logger.info('found user ' + JSON.stringify(result));
+                if (err) {
+                    throw err
+                };
+                db.close();
+                callback(result);
+            });
+
+        } catch (error) {
+            callback(error);
+            throw error;
+        }
     });
-    logger.info('token is ' + token);
-    res.send(token);
 }
 
 exports.validateToken = function (req, res) {
@@ -61,6 +108,7 @@ exports.validateToken = function (req, res) {
 }
 
 exports.list = async function list(req, res) {
+    var mongoclient = common.getClient();
     var query = {};
     if (typeof req.body.name != 'undefined')
         var query = {
@@ -68,7 +116,7 @@ exports.list = async function list(req, res) {
         }
     logger.debug('user controller query ' + JSON.stringify(query));
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
@@ -93,20 +141,19 @@ exports.list = async function list(req, res) {
 }
 
 exports.listByIds = async function listByIds(req, res) {
+    var mongoclient = common.getClient();
     var query = {};
     logger.debug('medicine controller query ' + JSON.stringify(req.body.data));
     const idArray = req.body.data;
 
     const objectIdArray = [];
     for (let i = 0; i < idArray.length; i++) {
-        console.log(idArray[i]);
-        console.log(ObjectId.isValid(idArray[i]));
         if (ObjectId.isValid(idArray[i])) {
             objectIdArray[i] = ObjectId(idArray[i]);
         }
     }
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(uri, function (err, db) {
         try {
             if (err) {
                 logger.error(err);
@@ -136,13 +183,14 @@ exports.listByIds = async function listByIds(req, res) {
 }
 
 exports.get = async function get(req, res) {
+    var mongoclient = common.getClient();
     const id = req.body.id;
     logger.debug('getting id ' + id);
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err
+                common.sendError(res, err);
             };
             var dbo = db.db(process.env.DB_NAME);
 
@@ -151,7 +199,7 @@ exports.get = async function get(req, res) {
             }, (function (err, result) {
                 if (err) {
                     logger.error('103 error while fetching record  ' + err);
-                    throw err
+                    common.sendError(res, err);
                 };
                 logger.info('102 found record with id ' + id);
                 common.sendSuccess(res, result);
@@ -165,11 +213,12 @@ exports.get = async function get(req, res) {
 }
 
 exports.insert = async function insert(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient = common.getClient();
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 
@@ -186,9 +235,10 @@ exports.insert = async function insert(req, res) {
 }
 
 exports.delete = async function delete1(req, res) {
+    var mongoclient = common.getClient();
     logger.info('in delete api ' + JSON.stringify(req.body.id));
 
-    await MongoClient.connect(uri, function (err, db) {
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) return err;
             var dbo = db.db(process.env.DB_NAME);
@@ -199,14 +249,14 @@ exports.delete = async function delete1(req, res) {
             dbo.collection(process.env.USER_COLLECTION_NAME).find(myquery).toArray(function (err, result) {
                 if (err) {
                     logger.error(err);
-                    throw err;
+                    common.sendError(res, err);
                 }
                 logger.info('found record ' + JSON.stringify(result));
             });
             dbo.collection(process.env.USER_COLLECTION_NAME).deleteOne(myquery, function (err, result) {
                 if (err) {
                     logger.error(err);
-                    return err;
+                    common.sendError(res, err);
                 }
                 db.close();
                 logger.info(result);
@@ -220,11 +270,12 @@ exports.delete = async function delete1(req, res) {
 }
 
 exports.update = async function update(req, res) {
-    await MongoClient.connect(uri, function (err, db) {
+    var mongoclient = common.getClient();
+    await mongoclient.connect(function (err, db) {
         try {
             if (err) {
                 logger.error(err);
-                throw err;
+                common.sendError(res, err);
             }
             var dbo = db.db(process.env.DB_NAME);
 
@@ -241,7 +292,10 @@ exports.update = async function update(req, res) {
             };
 
             dbo.collection(process.env.USER_COLLECTION_NAME).updateOne(myquery, newvalues, function (err, result) {
-                if (err) throw err;
+                if (err) {
+                    logger.error(err);
+                    common.sendError(res, err);
+                }
                 logger.debug(JSON.stringify(result));
                 common.sendSuccess(res, result);
                 db.close();
