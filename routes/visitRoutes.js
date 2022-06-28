@@ -6,6 +6,7 @@ var visitController = require('../controllers/visitController');
 module.exports = function (app) {
     //define routes for watchList
     app.post('/visit/list', middleware.validateJwt, function (req, res) {
+        logger.info('inside visit list get');
         try {
             logger.debug('in visit list route');
              visitController.list(req, res);

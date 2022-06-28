@@ -33,7 +33,11 @@ exports.generateToken = function (req, res) {
                         expiresIn: "2h"
                     });
                     logger.info('token is ' + token);
-                    res.send(token);
+                    res.send({
+                        'token': token,
+                        'roles': user.roles,
+                        'name': user.name
+                    });
                 } else {
                     return res.status(401).json({
                         'msg': 'Invalid Username or password'
