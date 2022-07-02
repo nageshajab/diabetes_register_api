@@ -57,7 +57,7 @@ exports.getRecordByQuery = async function getRecordByQuery(collectionName, query
   });
 }
 
-exports.InsertOne = async function insertOne(collectionName, data, callback) {
+exports.InsertOrUpdate = async function InsertOrUpdate(collectionName, query, data, callback) {
   var mongoclient = getClient();
   await mongoclient.connect(function (err, db) {
     try {
@@ -66,13 +66,17 @@ exports.InsertOne = async function insertOne(collectionName, data, callback) {
 
       var dbo = db.db(process.env.DB_NAME);
 
-      dbo.collection(collectionName).insertOne(data, function (err, result) {
+      dbo.collection(collectionName).updateOne(query, {
+        '$set': data
+      }, {
+        upsert: true
+      }, function (err, result) {
         if (err) throw err;
         callback(null, result);
         db.close();
       });
     } catch (error) {
-      callback(error,null);
+      callback(error, null);
     }
   });
 }

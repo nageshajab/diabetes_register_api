@@ -9,6 +9,9 @@ const {
     ObjectId
 } = require('mongodb');
 const common = require('./common');
+const {
+    query
+} = require('express');
 const uri = process.env.DB_URI;
 
 exports.generateToken = function (req, res) {
@@ -154,7 +157,6 @@ exports.insert = async function insert(req, res, callback) {
         common.sendError(res, 'Bad request', 400);
     }
     var data = {
-        username: req.body.username,
         description: req.body.description,
         password: req.body.password,
         roles: req.body.roles
@@ -167,7 +169,7 @@ exports.insert = async function insert(req, res, callback) {
         if (result.length > 0) {
             common.sendError(res, 'username already exists', 400);
         } else {
-            common.InsertOne(process.env.USER_COLLECTION_NAME, data, (err, data) => {
+            common.InsertOrUpdate(process.env.USER_COLLECTION_NAME, data, query, (err, data) => {
                 if (err) common.sendError(res, err, 500);
                 callback(null, data);
             })
@@ -208,36 +210,28 @@ exports.delete = async function delete1(req, res) {
 }
 
 exports.update = async function update(req, res) {
-    var mongoclient = common.getClient();
-    await mongoclient.connect(function (err, db) {
-        try {
+    try {
+
+        var query = {
+            '_id': ObjectId(req.body._id)
+        };
+        var newvalues = {
+            $set: {
+                name: req.body.name,
+                description: req.body.description,
+                password: req.body.password,
+                roles: req.body.roles
+            }
+        };
+        common.InsertOrUpdate(process.env.USER_COLLECTION_NAME, query, newvalues, function (err, result) {
             if (err)
                 common.sendError(res, err, 500);
 
-            var dbo = db.db(process.env.DB_NAME);
-
-            var myquery = {
-                '_id': ObjectId(req.body._id)
-            };
-            var newvalues = {
-                $set: {
-                    name: req.body.name,
-                    description: req.body.description,
-                    password: req.body.password,
-                    roles: req.body.roles
-                }
-            };
-
-            dbo.collection(process.env.USER_COLLECTION_NAME).updateOne(myquery, newvalues, function (err, result) {
-                if (err)
-                    common.sendError(res, err, 500);
-
-                logger.debug(JSON.stringify(result));
-                common.sendSuccess(res, result);
-                db.close();
-            });
-        } catch (error) {
-            common.sendError(res, e.message, 500);
-        }
-    });
+            logger.debug(JSON.stringify(result));
+            common.sendSuccess(res, result);
+            db.close();
+        });
+    } catch (error) {
+        common.sendError(res, e.message, 500);
+    }
 }
