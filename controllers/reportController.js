@@ -12,10 +12,9 @@ exports.weightlist = async function list(req, res) {
     logger.info('inside report list ');
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            };
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
             logger.info(`${process.env.DB_NAME} initialized`);
 
@@ -38,8 +37,7 @@ exports.weightlist = async function list(req, res) {
             getSortedRecords();
 
         } catch (error) {
-            logger.error(error.message);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }
@@ -49,10 +47,9 @@ exports.bplist = async function list(req, res) {
     logger.info('inside report list ');
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            };
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
            
@@ -75,8 +72,7 @@ exports.bplist = async function list(req, res) {
             }
             getSortedRecords();
         } catch (error) {
-            logger.error(error.message);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }
@@ -86,10 +82,9 @@ exports.bslist = async function list(req, res) {
     logger.info('inside report list ');
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            };
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
 
@@ -112,8 +107,7 @@ exports.bslist = async function list(req, res) {
             }
             getSortedRecords();
         } catch (error) {
-            logger.error(error.message);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }

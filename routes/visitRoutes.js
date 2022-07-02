@@ -11,8 +11,7 @@ module.exports = function (app) {
             logger.debug('in visit list route');
              visitController.list(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -21,8 +20,7 @@ module.exports = function (app) {
         try {
             visitController.get(req, res);
         } catch (error) {
-            logger.error('105 in error of get route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -31,8 +29,7 @@ module.exports = function (app) {
         try {
             visitController.insert(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -40,8 +37,7 @@ module.exports = function (app) {
         try {
             visitController.delete(req, res);
         } catch (ex) {
-            logger.error('in error block of watchlist delete route ' + ex);
-            common.sendError(res, ex);
+            common.sendError(res, ex,500);
         }
     });
 
@@ -50,8 +46,7 @@ module.exports = function (app) {
         try {
             visitController.update(req, res);
         } catch (error) {
-            logger.error('in error block of visit update route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 }

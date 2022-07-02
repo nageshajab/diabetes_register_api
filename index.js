@@ -41,4 +41,5 @@ app.listen(PORT, () => {
 process.on('uncaughtException', (err) => {
   console.log('whoops! there was an error');
   console.log(err);
+  logger.error(err);
 });

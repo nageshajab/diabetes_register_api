@@ -20,24 +20,21 @@ exports.list = async function list(req, res) {
 
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err.message);
-            };
+            if (err) 
+                common.sendError(res, err.message,500);
+            
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
             dbo.collection(process.env.ROLE_COLLECTION_NAME).find(query).toArray(function (err, result) {
                 logger.info('received record list count ' + result.length);
-                if (err) {
-                    logger.error('in error ' + err);
-                    common.sendError(res, err.message);
-                };
+                if (err) 
+                    common.sendError(res, err.message,500);
+                
                 common.sendSuccess(res, result);
                 db.close();
             });
         } catch (error) {
-            logger.error(error);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }
@@ -50,8 +47,6 @@ exports.listByIds = async function listByIds(req, res) {
 
     const objectIdArray = [];
     for (let i = 0; i < idArray.length; i++) {
-        console.log(idArray[i]);
-        console.log(ObjectId.isValid(idArray[i]));
         if (ObjectId.isValid(idArray[i])) {
             objectIdArray[i] = ObjectId(idArray[i]);
         }
@@ -59,10 +54,9 @@ exports.listByIds = async function listByIds(req, res) {
 
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err.message);
-            };
+            if (err) 
+                common.sendError(res, err.message,500);
+            
             var dbo = db.db(process.env.DB_NAME);
             logger.info(` ${process.env.DB_NAME} initialized`);
             dbo.collection(process.env.ROLE_COLLECTION_NAME).find({
@@ -71,17 +65,15 @@ exports.listByIds = async function listByIds(req, res) {
                 }
             }).toArray(function (err, result) {
                 logger.info('received record list count ' + result.length);
-                if (err) {
-                    logger.error('in error ' + err);
-                    common.sendError(res, err.message);
-                };
+                if (err) 
+                    common.sendError(res, err.message,500);
+                
                 common.sendSuccess(res, result);
                 db.close();
             });;
 
         } catch (error) {
-            logger.error(error.message);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }
@@ -92,10 +84,9 @@ exports.get = async function get(req, res) {
     logger.debug('getting id ' + id);
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            };
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
 
             dbo.collection(process.env.ROLE_COLLECTION_NAME).findOne({
@@ -110,8 +101,7 @@ exports.get = async function get(req, res) {
                 db.close();
             }));
         } catch (error) {
-            logger.error('104 ' + error.message);
-            common.sendError(res, error.message);
+            common.sendError(res, error.message,500);
         }
     });
 }
@@ -120,10 +110,9 @@ exports.insert = async function insert(req, res) {
     var mongoclient=common.getClient();
     await mongoclient.connect(function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            }
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
 
             dbo.collection(process.env.ROLE_COLLECTION_NAME).insertOne(req.body, function (err, result) {
@@ -132,8 +121,7 @@ exports.insert = async function insert(req, res) {
                 db.close();
             });
         } catch (error) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            common.sendError(res, e.message,500);
         }
     });
 }
@@ -151,24 +139,21 @@ exports.delete = async function delete1(req, res) {
                 '_id': o_id
             };
             dbo.collection(process.env.ROLE_COLLECTION_NAME).find(myquery).toArray(function (err, result) {
-                if (err) {
-                    logger.error(err);
-                    common.sendError(res, err);
-                }
+                if (err) 
+                    common.sendError(res, err,500);
+                
                 logger.info('found record ' + JSON.stringify(result));
             });
             dbo.collection(process.env.ROLE_COLLECTION_NAME).deleteOne(myquery, function (err, result) {
-                if (err) {
-                    logger.error(err);
-                    common.sendError(res, err);
-                }
+                if (err) 
+                    common.sendError(res, err,500);
+                
                 db.close();
                 logger.info(result);
                 common.sendSuccess(res, `deleted ${result.deletedCount} acknowledged ${result.acknowledged}`);
             });
         } catch (e) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            common.sendError(res, e.message,500);
         }
     });
 }
@@ -177,10 +162,9 @@ exports.update = async function update(req, res) {
     var mongoclient=common.getClient();
     await mongoclient.connect( function (err, db) {
         try {
-            if (err) {
-                logger.error(err);
-                common.sendError(res, err);
-            }
+            if (err) 
+                common.sendError(res, err,500);
+            
             var dbo = db.db(process.env.DB_NAME);
 
             var myquery = {
@@ -208,8 +192,7 @@ exports.update = async function update(req, res) {
                 db.close();
             });
         } catch (error) {
-            logger.error(e.message);
-            common.sendError(res, e.message);
+            common.sendError(res, e.message,500);
         }
     });
 }

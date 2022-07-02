@@ -9,8 +9,7 @@ module.exports = function (app) {
             logger.debug('in role list post api route');
             roleController.list(req, res);
         } catch (error) {
-            logger.error('in error block of role list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -19,8 +18,7 @@ module.exports = function (app) {
             logger.debug('in role list post api route');
             roleController.listByIds(req, res);
         } catch (error) {
-            logger.error('in error block of role list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -29,8 +27,7 @@ module.exports = function (app) {
         try {
             roleController.get(req, res);
         } catch (error) {
-            logger.error('105 in error of get role route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -39,8 +36,7 @@ module.exports = function (app) {
         try {
             roleController.insert(req, res);
         } catch (error) {
-            logger.error('in error block of role insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -48,8 +44,7 @@ module.exports = function (app) {
         try {
             roleController.delete(req, res);
         } catch (ex) {
-            logger.error('in error block of role delete route ' + ex);
-            common.sendError(res, ex);
+            common.sendError(res, ex,500);
         }
     });
     
@@ -58,8 +53,7 @@ module.exports = function (app) {
         try {
             roleController.update(req, res);
         } catch (error) {
-            logger.error('in error block of role insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 }

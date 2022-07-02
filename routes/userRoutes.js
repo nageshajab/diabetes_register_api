@@ -1,6 +1,7 @@
 var logger = require('../logger');
-var userController=require('../controllers/usersController');
-var middleware=require('../middleware');
+var userController = require('../controllers/usersController');
+var middleware = require('../middleware');
+var common = require('../controllers/common');
 
 module.exports = function (app) {
     //users routes - anonymous access
@@ -12,20 +13,23 @@ module.exports = function (app) {
     app.post('/users/list', middleware.validateJwt, function (req, res) {
         try {
             logger.debug('in user list post api route');
-            userController.list(req, res);
+            userController.list(req, res, function (err, result) {
+                if (err) throw err;
+                common.sendSuccess(res, result);
+            });
         } catch (error) {
-            logger.error('in error block of user list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error, 500);
         }
     });
 
     app.post('/users/listByids', middleware.validateJwt, function (req, res) {
         try {
             logger.debug('in user list post api route');
-            userController.listByIds(req, res);
+            userController.listByIds(req, res, function (result) {
+                common.sendSuccess(res, result);
+            });
         } catch (error) {
-            logger.error('in error block of user list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error, 500);
         }
     });
 
@@ -34,18 +38,19 @@ module.exports = function (app) {
         try {
             userController.get(req, res);
         } catch (error) {
-            logger.error('105 in error of get user route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error, 500);
         }
     });
 
     app.post('/users/insert', middleware.validateJwt, function (req, res) {
         logger.debug('in user insert route ' + JSON.stringify(req.body));
         try {
-            userController.insert(req, res);
+            userController.insert(req, res, function (err, data) {
+                if (err) throw err;
+                common.sendSuccess(res, data);
+            });
         } catch (error) {
-            logger.error('in error block of user insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error, 500);
         }
     });
 
@@ -53,18 +58,16 @@ module.exports = function (app) {
         try {
             userController.delete(req, res);
         } catch (ex) {
-            logger.error('in error block of user delete route ' + ex);
-            common.sendError(res, ex);
+            common.sendError(res, ex, 500);
         }
     });
-    
+
     app.post('/users/update', middleware.validateJwt, function (req, res) {
         logger.debug('in user update route ' + JSON.stringify(req.body));
         try {
             userController.update(req, res);
         } catch (error) {
-            logger.error('in error block of user insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error, 500);
         }
     });
 }

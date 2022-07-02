@@ -9,8 +9,7 @@ module.exports=function(app){
         try {
             reportController.weightlist(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -18,8 +17,7 @@ module.exports=function(app){
         try {
             reportController.bplist(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -27,8 +25,7 @@ module.exports=function(app){
         try {
             reportController.bslist(req, res);
         } catch (error) {
-            logger.error('in error block of watchlist list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 }

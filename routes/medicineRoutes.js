@@ -10,8 +10,7 @@ module.exports = function (app) {
             logger.debug('in medicine list post api route');
             medicineController.list(req, res);
         } catch (error) {
-            logger.error('in error block of medicine list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -20,8 +19,7 @@ module.exports = function (app) {
             logger.debug('in medicine list post api route');
             medicineController.listByIds(req, res);
         } catch (error) {
-            logger.error('in error block of medicine list route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -30,8 +28,7 @@ module.exports = function (app) {
         try {
             medicineController.get(req, res);
         } catch (error) {
-            logger.error('105 in error of get medicine route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -40,8 +37,7 @@ module.exports = function (app) {
         try {
             medicineController.insert(req, res);
         } catch (error) {
-            logger.error('in error block of medicine insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 
@@ -49,8 +45,7 @@ module.exports = function (app) {
         try {
             medicineController.delete(req, res);
         } catch (ex) {
-            logger.error('in error block of medicine delete route ' + ex);
-            common.sendError(res, ex);
+            common.sendError(res, ex,500);
         }
     });
     
@@ -59,8 +54,7 @@ module.exports = function (app) {
         try {
             medicineController.update(req, res);
         } catch (error) {
-            logger.error('in error block of medicine insert route ' + error);
-            common.sendError(res, error);
+            common.sendError(res, error,500);
         }
     });
 }
