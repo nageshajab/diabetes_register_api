@@ -28,6 +28,7 @@ require('./routes/other')(app);
 require('./routes/userRoutes')(app);
 require('./routes/roleRoutes')(app);
 require('./routes/reportRoutes')(app);
+require('./routes/reminderRoutes')(app);
 
 //start listening on port
 var dt=new Date();

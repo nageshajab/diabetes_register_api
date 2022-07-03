@@ -31,7 +31,6 @@ exports.sendSuccess = function sendSuccess(res, msg) {
 }
 
 exports.getRecordByQuery = async function getRecordByQuery(collectionName, query, callback) {
-  console.log('in common ' + typeof callback);
   var mongoclient = getClient();
   await mongoclient.connect(function (err, db) {
     try {
@@ -78,5 +77,33 @@ exports.InsertOrUpdate = async function InsertOrUpdate(collectionName, query, da
     } catch (error) {
       callback(error, null);
     }
+  });
+}
+
+
+exports.delete = async function delete1(collectionName,id,callback) {
+  var mongoclient = common.getClient();
+  logger.info('in delete api ' + JSON.stringify(req.body.id));
+
+  await mongoclient.connect(function (err, db) {
+      try {
+          if (err) return err;
+          var dbo = db.db(process.env.DB_NAME);
+          var o_id = ObjectId(req.body.id);
+          var myquery = {
+              '_id': o_id
+          };
+        
+          dbo.collection(collectionName).deleteOne(myquery, function (err, result) {
+              if (err)
+                  common.sendError(res, err, 500);
+
+              db.close();
+              logger.info(result);
+              common.sendSuccess(res, `deleted ${result.deletedCount} acknowledged ${result.acknowledged}`);
+          });
+      } catch (e) {
+          common.sendError(res, e.message, 500);
+      }
   });
 }

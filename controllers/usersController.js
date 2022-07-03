@@ -72,7 +72,7 @@ exports.validateToken = function (req, res) {
         const token = req.header(tokenHeaderKey);
 
         const verified = jwt.verify(token, jwtSecretKey);
-
+        
         if (verified) {
             return true;
         } else {
@@ -151,7 +151,7 @@ exports.get = async function get(req, res) {
 }
 
 exports.insert = async function insert(req, res, callback) {
-    console.log(JSON.stringify(req.body));
+    
     var validRequest = true;
     if (typeof req.body.username == 'undefined' || typeof req.body.password == 'undefined' || typeof req.body.roles == 'undefined') {
         common.sendError(res, 'Bad request', 400);
